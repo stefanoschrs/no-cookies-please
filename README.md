@@ -1,8 +1,18 @@
 # No Cookies Please
 
 <p align="center">
-	<img width="200px" src="icon.png"/>
+	<img width="150px" src="icon.png"/>
 </p>
+
+### Remove annoying Cookie/ GDPR overlays
+
+<p align="center">
+	<img width="200px" src="examples/cybot.png"/>
+	<img width="200px" src="examples/onetrust.png"/>
+	<img width="200px" src="examples/trustarc.png"/>
+</p>
+
+### Providers
 
 - [x] cybot.com
 - [x] onetrust.com
