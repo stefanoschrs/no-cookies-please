@@ -12,75 +12,74 @@ function onTabUpdate(tabId, changeInfo, tab) {
   chrome.runtime.onMessage.addListener(onRuntimeMessage)
 
   function code (tabId, appName, pathFound) {
-    for (let i = 0; i < 15; i++) {
-      setTimeout(removeCybot, i * 150)
-      setTimeout(removeOnetrust, i * 150)
-      setTimeout(removePiwik, i * 150)
-      setTimeout(remove1touch, i * 150)
+    const BootTimeout = 200
+    const RemoveIterations = 10
+    const RemoveIterationTimeout = 200
+
+    const providers = [
+      { name: "cybot.com", elements: ['[id="CybotCookiebotDialog"]'] },
+      { name: "onetrust.com", elements: ['[id="onetrust-consent-sdk"]'] },
+      { name: "piwik.pro", elements: ['div[id^="ppms_cm_consent_"]'] },
+      { name: "1touch.io", elements: ['[id="hs-eu-cookie-confirmation"]'] },
+      { name: "iubenda.com", elements: ['[id="iubenda-cs-banner"]'] },
+      { name: "trustarc.com", func: removeTrustarc },
+    ]
+
+    setTimeout(() => {
+      for (const provider of providers) {
+        if (document.querySelector(`[src*="${provider.name}"]`)) {
+          if (provider.hasOwnProperty('func')) {
+            provider.func()
+          } else {
+            basicRemover(provider.name, provider.elements)
+          }
+          break
+        }
+      }
+    }, BootTimeout)
+
+    /** Custom **/
+    async function removeTrustarc () {
+      await _removeElement('#trustarcNoticeFrame')
+      await _removeElement('[class="truste_overlay"]')
+      await _removeElement('[class="truste_box_overlay"]')
+
+      _sendMessage('trustarc.com')
     }
 
-    // https://www.cybot.com
-    function removeCybot () {
-      let el = document.querySelector('[id="CybotCookiebotDialog"]')
-      if (el && el.style.display !== 'none') {
-        el.style.display = 'none'
-        chrome.runtime.sendMessage({
-          app: appName,
-          path: pathFound,
-          meta: {
-            tabId: tabId,
-            name: 'cybot'
-          }
-        })
+    /** Helpers **/
+    async function basicRemover (name, elements) {
+      for (const el of elements) {
+        await _removeElement()
+      }
+
+      _sendMessage(name)
+    }
+
+    async function _removeElement (name) {
+      let el
+      for (let i = 0; i < RemoveIterations; i++) {
+        el = document.querySelector(name)
+        if (el) {
+          break
+        }
+        await new Promise((r) => setTimeout(() => r(), RemoveIterationTimeout))
+      }
+
+      if (el) {
+        el.parentElement.removeChild(el)
       }
     }
 
-    // https://www.onetrust.com/
-    function removeOnetrust () {
-      let el = document.querySelector('[id="onetrust-consent-sdk"]')
-      if (el && el.style.display !== 'none') {
-        el.style.display = 'none'
-        chrome.runtime.sendMessage({
-          app: appName,
-          path: pathFound,
-          meta: {
-            tabId: tabId,
-            name: 'onetrust'
-          }
-        })
-      }
-    }
-
-    // https://piwik.pro/
-    function removePiwik () {
-      let el = document.querySelector('div[id^="ppms_cm_consent_"]')
-      if (el && el.style.display !== 'none') {
-        el.style.display = 'none'
-        chrome.runtime.sendMessage({
-          app: appName,
-          path: pathFound,
-          meta: {
-            tabId: tabId,
-            name: 'piwik'
-          }
-        })
-      }
-    }
-
-    // https://1touch.io/
-    function remove1touch () {
-      let el = document.querySelector('[id="hs-eu-cookie-confirmation"]')
-      if (el && el.style.display !== 'none') {
-        el.style.display = 'none'
-        chrome.runtime.sendMessage({
-          app: appName,
-          path: pathFound,
-          meta: {
-            tabId: tabId,
-            name: '1touch'
-          }
-        })
-      }
+    function _sendMessage (cookieName) {
+      chrome.runtime.sendMessage({
+        app: appName,
+        path: pathFound,
+        meta: {
+          tabId: tabId,
+          name: cookieName
+        }
+      })
     }
   }
 }
