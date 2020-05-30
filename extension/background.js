@@ -13,7 +13,7 @@ function onTabUpdate(tabId, changeInfo, tab) {
 
   function code (tabId, appName, pathFound) {
     const BootTimeout = 200
-    const RemoveIterations = 10
+    const RemoveIterations = 20
     const RemoveIterationTimeout = 200
 
     const providers = [
@@ -51,7 +51,7 @@ function onTabUpdate(tabId, changeInfo, tab) {
     /** Helpers **/
     async function basicRemover (name, elements) {
       for (const el of elements) {
-        await _removeElement()
+        await _removeElement(el)
       }
 
       _sendMessage(name)
