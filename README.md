@@ -10,6 +10,7 @@
 	<img width="200px" src="examples/cybot.png"/>
 	<img width="200px" src="examples/onetrust.png"/>
 	<img width="200px" src="examples/trustarc.png"/>
+	<img width="200px" src="examples/consensu.png"/>
 </p>
 
 ### Providers
@@ -19,4 +20,6 @@
 - [x] piwik.pro
 - [x] 1touch.io
 - [x] iubenda.com
-- [x] trustarc.com 
+- [x] trustarc.com
+- [x] consensu.org
+

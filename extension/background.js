@@ -22,7 +22,8 @@ function onTabUpdate(tabId, changeInfo, tab) {
       { name: "piwik.pro", elements: ['div[id^="ppms_cm_consent_"]'] },
       { name: "1touch.io", elements: ['[id="hs-eu-cookie-confirmation"]'] },
       { name: "iubenda.com", elements: ['[id="iubenda-cs-banner"]'] },
-      { name: "trustarc.com", func: removeTrustarc },
+      { name: "trustarc.com", elements: ['#trustarcNoticeFrame', '[class="truste_overlay"]', '[class="truste_box_overlay"]'] },
+      { name: "consensu.org", func: removeConsensu },
     ]
 
     setTimeout(() => {
@@ -39,12 +40,12 @@ function onTabUpdate(tabId, changeInfo, tab) {
     }, BootTimeout)
 
     /** Custom **/
-    async function removeTrustarc () {
-      await _removeElement('#trustarcNoticeFrame')
-      await _removeElement('[class="truste_overlay"]')
-      await _removeElement('[class="truste_box_overlay"]')
+    async function removeConsensu () {
+      // https://quantcast.mgr.consensu.org/cmp.js
+      await _removeElement('body > .qc-cmp-ui-container')
+      document.body.style.overflow = 'initial'
 
-      _sendMessage('trustarc.com')
+      _sendMessage('consensu.org')
     }
 
     /** Helpers **/
