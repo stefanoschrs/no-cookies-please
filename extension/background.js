@@ -3,90 +3,116 @@ const PathFound = 'found'
 
 let cookieTabs = {}
 
+/**
+ * Page
+ */
+
+function executionCode (tabId, appName, pathFound) {
+  console.log('>>>>>>>>>>>><<<<<<<<<<<<<')
+  console.log('>>> No Cookies Please <<<')
+  console.log('>>>>>>>>>>>>><<<<<<<<<<<<')
+
+  const providers = [
+    { name: "cookiebot.com", elements: ['#CybotCookiebotDialog'] },
+    { name: "onetrust.com", elements: ['#onetrust-consent-sdk'] },
+    { name: "piwik.pro", elements: ['[id^="ppms_cm_consent_"]'] },
+    { name: "1touch.io", elements: ['#hs-eu-cookie-confirmation'] },
+    { name: "iubenda.com", elements: ['#iubenda-cs-banner'] },
+    { name: "trustarc.com", elements: ['#trustarcNoticeFrame', '.truste_overlay', '.truste_box_overlay'] },
+    { name: "consensu.org", func: removeConsensu },
+    { name: "cookielaw.org", elements: ['.optanon-alert-box-wrapper'] },
+  ]
+
+  const observer = new MutationObserver(((mutations, observer) => {
+    // TODO: Run only on suspicious mutations
+    runProviders()
+  }))
+  observer.observe(document.body, { subtree: true, childList: true })
+  runProviders()
+  // setTimeout(() => observer.disconnect(), 60000)
+
+  function runProviders () {
+    for (const provider of providers) {
+      const scriptEl = document.querySelector(`[src*="${provider.name}"]`)
+      if (scriptEl) {
+        // scriptEl.parentElement.removeChild(scriptEl)
+
+        if (provider.hasOwnProperty('func')) {
+          provider.func()
+        } else {
+          basicRemover(provider.name, provider.elements)
+        }
+
+        break
+      }
+    }
+  }
+
+  /** Custom **/
+  async function removeConsensu () {
+    // https://quantcast.mgr.consensu.org/cmp.js
+    if (await _removeElement('body > .qc-cmp-ui-container')) {
+      document.body.style.overflow = 'initial'
+      _sendMessage('consensu.org')
+    }
+  }
+
+  /** Helpers **/
+  async function basicRemover (name, elements) {
+    let removeFlag
+    for (const el of elements) {
+      if (await _removeElement(el)) {
+        removeFlag = true
+      }
+    }
+
+    if (removeFlag) {
+      _sendMessage(name)
+    }
+  }
+
+  async function _removeElement (name) {
+    const el = document.querySelector(name)
+    if (el) {
+      el.parentElement.removeChild(el)
+      return true
+    }
+  }
+
+  function _sendMessage (cookieName) {
+    chrome.runtime.sendMessage({
+      app: appName,
+      path: pathFound,
+      meta: {
+        tabId: tabId,
+        name: cookieName
+      }
+    })
+  }
+}
+
+/**
+ * Background
+ */
+
 function onTabUpdate(tabId, changeInfo, tab) {
   if (tab.url.startsWith('chrome') || changeInfo.status !== 'complete') {
     return
   }
 
-  chrome.tabs.executeScript({ code: `(${code})('${tabId}', '${AppName}','${PathFound}')` })
   chrome.runtime.onMessage.addListener(onRuntimeMessage)
 
-  function code (tabId, appName, pathFound) {
-    const BootTimeout = 200
-    const RemoveIterations = 20
-    const RemoveIterationTimeout = 200
-
-    const providers = [
-      { name: "cybot.com", elements: ['[id="CybotCookiebotDialog"]'] },
-      { name: "onetrust.com", elements: ['[id="onetrust-consent-sdk"]'] },
-      { name: "piwik.pro", elements: ['div[id^="ppms_cm_consent_"]'] },
-      { name: "1touch.io", elements: ['[id="hs-eu-cookie-confirmation"]'] },
-      { name: "iubenda.com", elements: ['[id="iubenda-cs-banner"]'] },
-      { name: "trustarc.com", elements: ['#trustarcNoticeFrame', '[class="truste_overlay"]', '[class="truste_box_overlay"]'] },
-      { name: "consensu.org", func: removeConsensu },
-    ]
-
-    setTimeout(() => {
-      for (const provider of providers) {
-        if (document.querySelector(`[src*="${provider.name}"]`)) {
-          if (provider.hasOwnProperty('func')) {
-            provider.func()
-          } else {
-            basicRemover(provider.name, provider.elements)
-          }
-          break
-        }
-      }
-    }, BootTimeout)
-
-    /** Custom **/
-    async function removeConsensu () {
-      // https://quantcast.mgr.consensu.org/cmp.js
-      await _removeElement('body > .qc-cmp-ui-container')
-      document.body.style.overflow = 'initial'
-
-      _sendMessage('consensu.org')
-    }
-
-    /** Helpers **/
-    async function basicRemover (name, elements) {
-      for (const el of elements) {
-        await _removeElement(el)
-      }
-
-      _sendMessage(name)
-    }
-
-    async function _removeElement (name) {
-      let el
-      for (let i = 0; i < RemoveIterations; i++) {
-        el = document.querySelector(name)
-        if (el) {
-          break
-        }
-        await new Promise((r) => setTimeout(() => r(), RemoveIterationTimeout))
-      }
-
-      if (el) {
-        el.parentElement.removeChild(el)
-      }
-    }
-
-    function _sendMessage (cookieName) {
-      chrome.runtime.sendMessage({
-        app: appName,
-        path: pathFound,
-        meta: {
-          tabId: tabId,
-          name: cookieName
-        }
-      })
-    }
-  }
+  executeCode(tabId)
 }
 
 function onTabActivated ({ tabId }) {
+  executeCode(tabId)
+
   setBadge(cookieTabs[tabId])
+}
+
+function executeCode (tabId) {
+  chrome.tabs.executeScript({ code: `(${executionCode})('${tabId}', '${AppName}','${PathFound}')` })
 }
 
 function onRuntimeMessage (message) {
