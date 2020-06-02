@@ -14,3 +14,5 @@ https://www.linode.com/
 https://www.kom.club/
 - cookielaw.org
 https://resultscui.active.com/
+- hs-banner.com (hubspot.com)
+https://www.npmjs.com/

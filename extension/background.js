@@ -21,6 +21,7 @@ function executionCode (tabId, appName, pathFound) {
     { name: "trustarc.com", elements: ['#trustarcNoticeFrame', '.truste_overlay', '.truste_box_overlay'] },
     { name: "consensu.org", func: removeConsensu },
     { name: "cookielaw.org", elements: ['.optanon-alert-box-wrapper'] },
+    { name: "hs-banner.com", elements: ['#hs-eu-cookie-confirmation'] },
   ]
 
   const observer = new MutationObserver(((mutations, observer) => {
