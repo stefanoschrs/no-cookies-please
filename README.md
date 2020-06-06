@@ -14,12 +14,13 @@
 <p align="center">
     <a href="https://ibb.co/4NXyV7B"><img width="200px" src="https://i.ibb.co/JkGLsKX/onetrust.png" alt="onetrust" border="0"></a>
     <a href="https://ibb.co/7GLtRbC"><img width="200px" src="https://i.ibb.co/NLb2m7C/trustarc.png" alt="trustarc" border="0"></a>
-    <a href="https://ibb.co/SBSGrnV"><img width="200px" src="https://i.ibb.co/dDZxg2k/2020-06-02-07-14.png" alt="hubspot" border="0"></a>    
+    <a href="https://ibb.co/SBSGrnV"><img width="200px" src="https://i.ibb.co/dDZxg2k/2020-06-02-07-14.png" alt="hubspot" border="0"></a>
+    <a href="https://ibb.co/Ch9f9KV"><img width="200px" src="https://i.ibb.co/4PSHSR4/image.png" alt="cookiebot" border="0"></a>    
 </p>
 
 ### Providers
 
-- [x] cybot.com
+- [x] cookiebot.com
 - [x] onetrust.com
 - [x] piwik.pro
 - [x] 1touch.io

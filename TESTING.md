@@ -1,5 +1,6 @@
 - cookiebot.com
 https://goarya.com/
+https://www.digitaltrends.com/
 - onetrust.com
 https://www.cnet.com/
 - piwik.pro

@@ -13,7 +13,7 @@ function executionCode (tabId, appName, pathFound) {
   console.log('>>>>>>>>>>>>><<<<<<<<<<<<')
 
   const providers = [
-    { name: "cookiebot.com", elements: ['#CybotCookiebotDialog'] },
+    { name: "cookiebot.com", func: removeCookiebot },
     { name: "onetrust.com", elements: ['#onetrust-consent-sdk'] },
     { name: "piwik.pro", elements: ['[id^="ppms_cm_consent_"]'] },
     { name: "1touch.io", elements: ['#hs-eu-cookie-confirmation'] },
@@ -50,8 +50,19 @@ function executionCode (tabId, appName, pathFound) {
   }
 
   /** Custom **/
+  async function removeCookiebot () {
+    document.body.classList.remove('cookie-dialog-up')
+
+    basicRemover('cookiebot.com', [
+      // Basic
+      '#CybotCookiebotDialog',
+      // Advanced
+      '#dtcookie-container',
+      '.dtcookie-overlay'
+    ])
+  }
+
   async function removeConsensu () {
-    // https://quantcast.mgr.consensu.org/cmp.js
     if (await _removeElement('body > .qc-cmp-ui-container')) {
       document.body.style.overflow = 'initial'
       _sendMessage('consensu.org')
